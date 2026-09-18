@@ -1,0 +1,39 @@
+{
+  "user_request": "Reduce cost if it is safe.",
+  "services": [
+    {
+      "service_id": "checkout-api",
+      "cpu_percent": 24.0,
+      "memory_percent": 39.0,
+      "requests_per_minute": 900.0,
+      "latency_ms": 170.0,
+      "instances": 5,
+      "cost_per_hour": 20.00,
+      "min_instances": 2,
+      "max_instances": 8,
+      "max_latency_ms": 250.0,
+      "healthy": true,
+      "availability_percent": 99.99,
+      "timestamp": "2026-09-17T08:00:00Z"
+    }
+  ],
+  "latest_traffic": [
+    {
+      "service_id": "checkout-api",
+      "requests_per_minute": 5200.0,
+      "timestamp": "2026-09-17T10:30:00Z"
+    }
+  ],
+  "recent_events": [],
+  "environment_constraints": {
+    "maximum_observation_age_seconds": 900,
+    "maximum_scale_step": 2,
+    "require_healthy_for_scale_down": true,
+    "require_fresh_metrics_for_action": true,
+    "latency_safety_margin_percent": 20.0,
+    "minimum_availability_percent": 99.0,
+    "max_action_retries": 1,
+    "cooldown_seconds": 300
+  },
+  "requested_scenario": "scenario_c"
+}

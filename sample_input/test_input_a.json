@@ -1,0 +1,48 @@
+{
+  "user_request": "Review the current services and reduce unnecessary cost without breaking the latency or availability requirements.",
+  "services": [
+    {
+      "service_id": "orders-api",
+      "cpu_percent": 22.0,
+      "memory_percent": 41.0,
+      "requests_per_minute": 1200.0,
+      "latency_ms": 180.0,
+      "instances": 6,
+      "cost_per_hour": 18.50,
+      "min_instances": 2,
+      "max_instances": 8,
+      "max_latency_ms": 300.0,
+      "healthy": true,
+      "availability_percent": 99.99,
+      "timestamp": "2026-09-17T10:30:00Z"
+    },
+    {
+      "service_id": "reports-worker",
+      "cpu_percent": 9.0,
+      "memory_percent": 15.0,
+      "requests_per_minute": 0.0,
+      "latency_ms": 0.0,
+      "instances": 4,
+      "cost_per_hour": 11.00,
+      "min_instances": 1,
+      "max_instances": 6,
+      "max_latency_ms": 900.0,
+      "healthy": true,
+      "availability_percent": 99.99,
+      "timestamp": "2026-09-17T10:30:00Z"
+    }
+  ],
+  "latest_traffic": [],
+  "recent_events": [],
+  "environment_constraints": {
+    "maximum_observation_age_seconds": 900,
+    "maximum_scale_step": 2,
+    "require_healthy_for_scale_down": true,
+    "require_fresh_metrics_for_action": true,
+    "latency_safety_margin_percent": 20.0,
+    "minimum_availability_percent": 99.0,
+    "max_action_retries": 1,
+    "cooldown_seconds": 300
+  },
+  "requested_scenario": "scenario_a"
+}
