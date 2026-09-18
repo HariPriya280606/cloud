@@ -5,6 +5,7 @@ import RequestForm from './components/RequestForm.jsx';
 import ServiceInput from './components/ServiceInput.jsx';
 import ServiceTable from './components/ServiceTable.jsx';
 import ResultPanel from './components/ResultPanel.jsx';
+import ReportHistory from './components/ReportHistory.jsx';
 import { 
   optimizeServices, 
   runScenarioApi, 
@@ -181,6 +182,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [generalError, setGeneralError] = useState(null);
+  const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
 
   // Sync parsed services whenever servicesJson changes
   useEffect(() => {
@@ -248,6 +250,14 @@ export default function App() {
     };
   };
 
+  // Load a historical report into the result panel
+  const handleLoadHistoryReport = (reportData) => {
+    setReport(reportData);
+    setGeneralError(null);
+    // Scroll result panel into view on mobile
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Run Custom Analysis
   const handleAnalyze = async () => {
     setGeneralError(null);
@@ -256,6 +266,7 @@ export default function App() {
       const payload = buildPayload();
       const res = await optimizeServices(payload);
       setReport(res);
+      setHistoryRefreshKey((k) => k + 1);
     } catch (err) {
       setGeneralError(err.message);
     } finally {
@@ -271,6 +282,7 @@ export default function App() {
     try {
       const res = await runScenarioApi(scId);
       setReport(res);
+      setHistoryRefreshKey((k) => k + 1);
     } catch (err) {
       setGeneralError(err.message);
     } finally {
@@ -322,6 +334,11 @@ export default function App() {
         onSelectScenario={handleSelectScenario}
         onRunScenario={handleRunScenarioDirect}
         loading={loading}
+      />
+
+      <ReportHistory
+        key={historyRefreshKey}
+        onLoadReport={handleLoadHistoryReport}
       />
 
       {generalError && (
