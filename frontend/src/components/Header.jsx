@@ -1,7 +1,10 @@
 import React from 'react';
 import { CloudRain, RefreshCw, Cpu } from 'lucide-react';
 
-export default function Header({ onReset, isResetting }) {
+export default function Header({ onReset, isResetting, backendHealth }) {
+  const isConnected = !!backendHealth;
+  const isLlmMode = backendHealth?.llm_configured === true;
+
   return (
     <header className="header-card">
       <div className="header-title-group">
@@ -14,9 +17,12 @@ export default function Header({ onReset, isResetting }) {
         </p>
       </div>
       <div className="header-actions">
-        <div className="status-indicator">
+        <div className={`status-indicator ${isConnected ? 'status-connected' : 'status-disconnected'}`}>
           <div className="status-dot"></div>
-          <span>Autonomous Agent Ready</span>
+          <span>
+            {!isConnected ? 'Connecting...' : 
+             isLlmMode ? 'LLM Engine Active' : 'Deterministic Fallback Mode'}
+          </span>
         </div>
         <button 
           className="btn-secondary" 

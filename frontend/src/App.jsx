@@ -12,7 +12,8 @@ import {
   runScenarioApi, 
   resetSimulatorApi, 
   downloadReportFile, 
-  optimizeAndDirectDownload 
+  optimizeAndDirectDownload,
+  fetchHealth
 } from './api.js';
 
 // Predefined Scenario Data
@@ -185,6 +186,14 @@ export default function App() {
   const [generalError, setGeneralError] = useState(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [liveRefreshKey, setLiveRefreshKey] = useState(0);
+  const [backendHealth, setBackendHealth] = useState(null);
+
+  // Fetch backend health and configuration on mount
+  useEffect(() => {
+    fetchHealth()
+      .then(data => setBackendHealth(data))
+      .catch(err => console.error('Failed to fetch backend health:', err));
+  }, []);
 
   // Sync parsed services whenever servicesJson changes
   useEffect(() => {
@@ -332,7 +341,7 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <Header onReset={handleReset} isResetting={isResetting} />
+      <Header onReset={handleReset} isResetting={isResetting} backendHealth={backendHealth} />
 
       <ScenarioButtons
         currentScenario={currentScenario}
