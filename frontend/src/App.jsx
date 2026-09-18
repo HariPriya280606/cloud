@@ -171,14 +171,14 @@ const SCENARIO_DATA = {
 };
 
 export default function App() {
-  const [currentScenario, setCurrentScenario] = useState('scenario_a');
-  const [userRequest, setUserRequest] = useState(SCENARIO_DATA.scenario_a.user_request);
-  const [servicesJson, setServicesJson] = useState(JSON.stringify(SCENARIO_DATA.scenario_a.services, null, 2));
-  const [trafficJson, setTrafficJson] = useState(JSON.stringify(SCENARIO_DATA.scenario_a.latest_traffic, null, 2));
-  const [eventsJson, setEventsJson] = useState(JSON.stringify(SCENARIO_DATA.scenario_a.recent_events, null, 2));
-  const [constraintsJson, setConstraintsJson] = useState(JSON.stringify(SCENARIO_DATA.scenario_a.environment_constraints, null, 2));
+  const [currentScenario, setCurrentScenario] = useState(null);
+  const [userRequest, setUserRequest] = useState('');
+  const [servicesJson, setServicesJson] = useState('');
+  const [trafficJson, setTrafficJson] = useState('');
+  const [eventsJson, setEventsJson] = useState('');
+  const [constraintsJson, setConstraintsJson] = useState('');
   
-  const [parsedServices, setParsedServices] = useState(SCENARIO_DATA.scenario_a.services);
+  const [parsedServices, setParsedServices] = useState([]);
   const [servicesError, setServicesError] = useState(null);
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -197,6 +197,11 @@ export default function App() {
 
   // Sync parsed services whenever servicesJson changes
   useEffect(() => {
+    if (!servicesJson.trim()) {
+      setParsedServices([]);
+      setServicesError(null);
+      return;
+    }
     try {
       const parsed = JSON.parse(servicesJson);
       if (Array.isArray(parsed)) {
@@ -210,8 +215,8 @@ export default function App() {
     }
   }, [servicesJson]);
 
-  // Handle Scenario Selection
-  const handleSelectScenario = (scId) => {
+  // Handle Explicit Demo Scenario Loading
+  const handleLoadDemoScenario = (scId) => {
     setCurrentScenario(scId);
     const sc = SCENARIO_DATA[scId];
     if (sc) {
@@ -288,7 +293,7 @@ export default function App() {
 
   // Direct Run Scenario
   const handleRunScenarioDirect = async (scId) => {
-    handleSelectScenario(scId);
+    handleLoadDemoScenario(scId);
     setGeneralError(null);
     setLoading(true);
     try {
@@ -329,7 +334,13 @@ export default function App() {
     setGeneralError(null);
     try {
       await resetSimulatorApi();
-      handleSelectScenario('scenario_a');
+      setCurrentScenario(null);
+      setUserRequest('');
+      setServicesJson('');
+      setTrafficJson('');
+      setEventsJson('');
+      setConstraintsJson('');
+      setParsedServices([]);
       setReport(null);
       setLiveRefreshKey((k) => k + 1);
     } catch (err) {
@@ -345,7 +356,7 @@ export default function App() {
 
       <ScenarioButtons
         currentScenario={currentScenario}
-        onSelectScenario={handleSelectScenario}
+        onSelectScenario={handleLoadDemoScenario}
         onRunScenario={handleRunScenarioDirect}
         loading={loading}
       />

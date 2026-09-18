@@ -4,8 +4,8 @@ import { Server, Activity, ShieldCheck, ShieldAlert, Clock, DollarSign } from 'l
 export default function ServiceTable({ services }) {
   if (!services || services.length === 0) {
     return (
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.88rem', padding: '16px', textAlign: 'center' }}>
-        No services parsed yet. Select a scenario or enter valid services JSON.
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.88rem', padding: '16px', textAlign: 'center', background: 'rgba(255, 255, 255, 0.02)', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+        No input data loaded. Upload or paste the required JSON file to begin.
       </div>
     );
   }

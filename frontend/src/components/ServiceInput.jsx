@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Check, AlertCircle, Code } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ChevronDown, ChevronRight, Check, AlertCircle, Code, UploadCloud, FileJson } from 'lucide-react';
 
 export default function ServiceInput({
   servicesJson,
@@ -13,6 +13,8 @@ export default function ServiceInput({
   servicesError,
 }) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [fileName, setFileName] = useState(null);
+  const fileInputRef = useRef(null);
 
   const formatJson = (setter, val) => {
     try {
@@ -23,8 +25,75 @@ export default function ServiceInput({
     }
   };
 
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name);
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        // The uploaded file could be a full OptimizationRequest or just a list of services.
+        if (parsed.services && Array.isArray(parsed.services)) {
+          // Full request payload format
+          setServicesJson(JSON.stringify(parsed.services, null, 2));
+          if (parsed.latest_traffic) setTrafficJson(JSON.stringify(parsed.latest_traffic, null, 2));
+          if (parsed.recent_events) setEventsJson(JSON.stringify(parsed.recent_events, null, 2));
+          if (parsed.environment_constraints) setConstraintsJson(JSON.stringify(parsed.environment_constraints, null, 2));
+        } else if (Array.isArray(parsed)) {
+          // Just the services array
+          setServicesJson(JSON.stringify(parsed, null, 2));
+        } else {
+          // Fallback, stringify whatever it is and let App.jsx throw validation error
+          setServicesJson(JSON.stringify(parsed, null, 2));
+        }
+      } catch (err) {
+        setServicesJson("Invalid JSON file uploaded.");
+      }
+    };
+    reader.readAsText(file);
+    // Reset input so the same file can be uploaded again if needed
+    e.target.value = null;
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      
+      {/* File Upload Control */}
+      <div className="form-group" style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)', padding: '16px', textAlign: 'center' }}>
+        <input 
+          type="file" 
+          accept=".json" 
+          ref={fileInputRef} 
+          style={{ display: 'none' }} 
+          onChange={handleFileUpload} 
+        />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+          <UploadCloud size={28} color="#38bdf8" />
+          <div style={{ fontSize: '0.92rem', fontWeight: 600 }}>
+            Upload JSON Input File
+          </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Upload a file containing service metrics or a full optimization request payload.
+          </div>
+          <button 
+            type="button" 
+            className="btn-secondary"
+            onClick={() => fileInputRef.current?.click()}
+            style={{ marginTop: '8px' }}
+          >
+            Select File
+          </button>
+          {fileName && (
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#34d399', background: 'rgba(52, 211, 153, 0.1)', padding: '4px 10px', borderRadius: '4px' }}>
+              <FileJson size={14} />
+              Loaded: {fileName}
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Monitored Services JSON */}
       <div className="form-group">
         <div className="form-label">

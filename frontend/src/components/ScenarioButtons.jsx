@@ -4,7 +4,7 @@ import { Play, TrendingDown, TrendingUp, AlertTriangle, XCircle } from 'lucide-r
 const SCENARIOS = [
   {
     id: 'scenario_a',
-    name: 'Scenario A: Idle Cost Waste',
+    name: 'Demo: Scenario A (Idle Cost Waste)',
     badge: 'Cost Waste',
     badgeClass: 'badge-cost',
     icon: TrendingDown,
@@ -12,7 +12,7 @@ const SCENARIOS = [
   },
   {
     id: 'scenario_b',
-    name: 'Scenario B: Traffic Growth Surge',
+    name: 'Demo: Scenario B (Traffic Growth Surge)',
     badge: 'Traffic Surge',
     badgeClass: 'badge-traffic',
     icon: TrendingUp,
@@ -20,7 +20,7 @@ const SCENARIOS = [
   },
   {
     id: 'scenario_c',
-    name: 'Scenario C: Stale Metrics Telemetry',
+    name: 'Demo: Scenario C (Stale Metrics Telemetry)',
     badge: 'Stale Refusal',
     badgeClass: 'badge-stale',
     icon: AlertTriangle,
@@ -28,7 +28,7 @@ const SCENARIOS = [
   },
   {
     id: 'scenario_d',
-    name: 'Scenario D: Capacity Failure Mode',
+    name: 'Demo: Scenario D (Capacity Failure Mode)',
     badge: 'Escalation',
     badgeClass: 'badge-failure',
     icon: XCircle,
@@ -39,7 +39,7 @@ const SCENARIOS = [
 export default function ScenarioButtons({ currentScenario, onSelectScenario, onRunScenario, loading }) {
   return (
     <div className="scenario-selector">
-      <div className="section-label">Preset Test Scenarios</div>
+      <div className="section-label">Optional: Load Demo Data</div>
       <div className="scenario-grid">
         {SCENARIOS.map((sc) => {
           const Icon = sc.icon;
