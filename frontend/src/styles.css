@@ -735,3 +735,79 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ─── Live Simulator State Panel ─────────────────────────────────────────── */
+.live-sim-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.06), var(--shadow-card);
+  margin-bottom: 24px;
+}
+
+.live-sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.live-sim-header:hover {
+  background: rgba(52, 211, 153, 0.04);
+}
+
+.live-sim-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.live-sim-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: livePulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px #34d399; }
+  50%       { opacity: 0.5; box-shadow: 0 0 14px #34d399; }
+}
+
+.live-sim-summary-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  padding: 2px 9px;
+  border-radius: 9999px;
+}
+
+.live-sim-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-sim-ts {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.live-sim-body {
+  border-top: 1px solid rgba(52, 211, 153, 0.12);
+  padding: 12px 14px 14px;
+}

@@ -6,6 +6,7 @@ import ServiceInput from './components/ServiceInput.jsx';
 import ServiceTable from './components/ServiceTable.jsx';
 import ResultPanel from './components/ResultPanel.jsx';
 import ReportHistory from './components/ReportHistory.jsx';
+import LiveSimulatorState from './components/LiveSimulatorState.jsx';
 import { 
   optimizeServices, 
   runScenarioApi, 
@@ -183,6 +184,7 @@ export default function App() {
   const [isResetting, setIsResetting] = useState(false);
   const [generalError, setGeneralError] = useState(null);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
+  const [liveRefreshKey, setLiveRefreshKey] = useState(0);
 
   // Sync parsed services whenever servicesJson changes
   useEffect(() => {
@@ -267,6 +269,7 @@ export default function App() {
       const res = await optimizeServices(payload);
       setReport(res);
       setHistoryRefreshKey((k) => k + 1);
+      setLiveRefreshKey((k) => k + 1);
     } catch (err) {
       setGeneralError(err.message);
     } finally {
@@ -283,6 +286,7 @@ export default function App() {
       const res = await runScenarioApi(scId);
       setReport(res);
       setHistoryRefreshKey((k) => k + 1);
+      setLiveRefreshKey((k) => k + 1);
     } catch (err) {
       setGeneralError(err.message);
     } finally {
@@ -318,6 +322,7 @@ export default function App() {
       await resetSimulatorApi();
       handleSelectScenario('scenario_a');
       setReport(null);
+      setLiveRefreshKey((k) => k + 1);
     } catch (err) {
       setGeneralError('Reset failed: ' + err.message);
     } finally {
@@ -340,6 +345,8 @@ export default function App() {
         key={historyRefreshKey}
         onLoadReport={handleLoadHistoryReport}
       />
+
+      <LiveSimulatorState refreshTrigger={liveRefreshKey} />
 
       {generalError && (
         <div style={{ background: 'rgba(244, 63, 94, 0.1)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#fb7185', padding: '12px 16px', borderRadius: '8px', marginBottom: '20px' }}>
