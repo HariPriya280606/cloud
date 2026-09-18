@@ -67,7 +67,7 @@ class VerificationEngine:
         active_healthy = fresh_metrics.get("healthy", True)
         active_latency = fresh_metrics.get("latency_ms", service.latency_ms)
         active_availability = fresh_metrics.get("availability_percent", service.availability_percent)
-        active_cost = fresh_metrics.get("cost_per_hour", cost_after)
+        active_cost = 0.0 if action == ActionType.STOP_IDLE_SERVICE else round(active_instances * service.cost_per_hour, 2)
 
         all_passed = True
 

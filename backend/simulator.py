@@ -121,11 +121,10 @@ class CloudSimulator:
             return result
 
         current_instances = srv.get("instances", 1)
-        unit_cost = srv.get("cost_per_hour", 0.0) / current_instances if current_instances > 0 else 1.0
+        unit_cost = srv.get("cost_per_hour", 0.0)
 
         if action == ActionType.SCALE_UP:
             srv["instances"] = target_instances
-            srv["cost_per_hour"] = round(unit_cost * target_instances, 2)
             # Simulated effect: slightly lower CPU and latency
             srv["cpu_percent"] = max(5.0, round(srv["cpu_percent"] * (current_instances / target_instances), 1))
             srv["latency_ms"] = max(10.0, round(srv["latency_ms"] * (current_instances / target_instances) * 0.9, 1))
@@ -134,7 +133,6 @@ class CloudSimulator:
 
         elif action == ActionType.SCALE_DOWN:
             srv["instances"] = target_instances
-            srv["cost_per_hour"] = round(unit_cost * target_instances, 2)
             # Simulated effect: slightly higher CPU/latency if traffic exists, but stay safe
             if srv.get("requests_per_minute", 0) > 0:
                 srv["cpu_percent"] = min(95.0, round(srv["cpu_percent"] * (current_instances / target_instances), 1))

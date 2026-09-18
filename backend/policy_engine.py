@@ -19,6 +19,10 @@ class PolicyEngine:
     def __init__(self):
         self._action_history: List[Dict[str, Any]] = []
 
+    def reset(self) -> None:
+        """Clear action history."""
+        self._action_history = []
+
     def record_action(self, service_id: str, action: str, timestamp: str) -> None:
         """Record executed action timestamp for cooldown tracking."""
         self._action_history.append({
@@ -354,7 +358,7 @@ class PolicyEngine:
                 try:
                     act_dt = parse_iso_datetime(act.get("timestamp"))
                     diff = (now_dt - act_dt).total_seconds()
-                    if diff < cooldown_seconds:
+                    if 0 <= diff < cooldown_seconds:
                         # Allow bypass only if critical constraint violation
                         if service.latency_ms > service.max_latency_ms or not service.healthy or service.cpu_percent >= 90.0:
                             return True, f"Cooldown bypassed due to critical performance threshold breach."

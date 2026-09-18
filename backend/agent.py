@@ -68,6 +68,7 @@ class CostOptimizationAgent:
 
         # Load input services into simulator state
         simulator.reset()
+        self.policy_engine.reset()
 
         # Handle injected test scenario failure modes
         if request.requested_scenario == "scenario_d" or (
@@ -206,7 +207,7 @@ class CostOptimizationAgent:
         affected_services: List[str] = []
 
         for srv in raw_services:
-            unit_cost = srv.cost_per_hour / srv.instances if srv.instances > 0 else 0.0
+            unit_cost = srv.cost_per_hour
             
             # Check traffic growth
             traffic_growth_pct = 0.0
@@ -447,8 +448,8 @@ class CostOptimizationAgent:
         # Step 9: Post-Action Verification
         # ---------------------------------------------------------------------
         add_audit("verify", "Performing post-action state verification and SLA validation.")
-        unit_cost = target_service.cost_per_hour / target_service.instances if target_service.instances > 0 else 0.0
-        expected_cost_after = unit_cost * final_target_instances
+        cost_before = target_service.instances * target_service.cost_per_hour
+        cost_after = final_target_instances * target_service.cost_per_hour
 
         verification_result = self.verification_engine.verify_action(
             service=target_service,
@@ -457,8 +458,8 @@ class CostOptimizationAgent:
             requested_instances=final_target_instances,
             execution_status=exec_status,
             constraints=request.environment_constraints,
-            cost_before=target_service.cost_per_hour,
-            cost_after=expected_cost_after,
+            cost_before=cost_before,
+            cost_after=cost_after,
         )
 
         add_audit("complete", f"Optimization workflow complete. Verification {'passed' if verification_result.success else 'failed'}.")

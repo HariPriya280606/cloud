@@ -49,15 +49,18 @@ class DeterministicFallbackAdapter(LLMAdapter):
         req_lower = user_request.lower()
 
         # Intent classification
-        intent = IntentType.COST_OPTIMIZATION
-        if "increase" in req_lower or "traffic" in req_lower or "surge" in req_lower:
+        if "cost" in req_lower or "reduce" in req_lower or "unnecessary" in req_lower or "waste" in req_lower:
+            intent = IntentType.COST_OPTIMIZATION
+        elif "increase" in req_lower or "traffic" in req_lower or "surge" in req_lower:
             intent = IntentType.SCALE_FOR_TRAFFIC
-        elif "latency" in req_lower or "target" in req_lower or "protect" in req_lower:
+        elif "latency" in req_lower or "target" in req_lower:
             intent = IntentType.PROTECT_LATENCY
         elif "only if" in req_lower or "conditional" in req_lower:
             intent = IntentType.CONDITIONAL_SCALING
         elif "investigate" in req_lower or "audit" in req_lower or "inspect" in req_lower:
             intent = IntentType.INVESTIGATE_ONLY
+        else:
+            intent = IntentType.COST_OPTIMIZATION
 
         if not candidate_actions:
             return LLMDecisionOutput(
@@ -68,27 +71,35 @@ class DeterministicFallbackAdapter(LLMAdapter):
                 recommendations=["Monitor workload trends for upcoming capacity changes."],
             )
 
-        # Rank candidates: prioritize scale_up for urgent/latency risk, scale_down for cost waste
+        # Rank candidates: prioritize scale_up for urgent/latency risk, idle waste for cost optimization
         best_idx = 0
         reason = candidate_actions[0].get("reason", "Highest priority candidate selected.")
         recommendations = []
 
-        # If user asked for latency protection or scale_for_traffic, prefer scale_up actions
         if intent in (IntentType.SCALE_FOR_TRAFFIC, IntentType.PROTECT_LATENCY):
             for idx, cand in enumerate(candidate_actions):
                 if cand.get("action") == ActionType.SCALE_UP.value:
                     best_idx = idx
                     reason = cand.get("reason", "Preventive scale-up selected to satisfy latency and traffic requirements.")
                     break
+        elif intent == IntentType.CONDITIONAL_SCALING:
+            # Check for urgent scaling candidates first
+            for idx, cand in enumerate(candidate_actions):
+                if cand.get("action") == ActionType.SCALE_UP.value or cand.get("risk_level") == "high":
+                    best_idx = idx
+                    reason = cand.get("reason", "Conditional scaling triggered by high resource pressure.")
+                    break
         else:
-            # For cost optimization, prioritize candidates with highest expected savings
-            max_savings = -1.0
+            # For cost optimization, prioritize idle waste candidates (low risk, high savings)
+            max_savings = -999999.0
             for idx, cand in enumerate(candidate_actions):
                 savings = cand.get("expected_hourly_savings", 0.0)
-                if savings > max_savings:
-                    max_savings = savings
+                priority_bonus = 100.0 if cand.get("risk_level") == "low" else 0.0
+                score = savings + priority_bonus
+                if score > max_savings:
+                    max_savings = score
                     best_idx = idx
-                    reason = cand.get("reason", "Cost-waste candidate selected for safe reduction.")
+                    reason = cand.get("reason", "Strongest cost-waste candidate selected for safe reduction.")
 
         # Context-aware recommendations
         selected = candidate_actions[best_idx]

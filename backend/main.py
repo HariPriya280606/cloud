@@ -51,16 +51,22 @@ app.add_middleware(
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Custom readable validation error handler."""
     errors = []
+    raw_errors = []
     for err in exc.errors():
         loc = " -> ".join(str(l) for l in err.get("loc", []))
         msg = err.get("msg", "Invalid value")
         errors.append(f"{loc}: {msg}")
+        raw_errors.append({
+            "loc": [str(l) for l in err.get("loc", [])],
+            "msg": str(err.get("msg")),
+            "type": str(err.get("type")),
+        })
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "error": "Validation Error",
             "details": errors,
-            "raw": exc.errors(),
+            "raw": raw_errors,
         },
     )
 
